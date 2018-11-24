@@ -1,3 +1,1 @@
-# Run mainloop
-def mainloop():
-    pass
+pass
