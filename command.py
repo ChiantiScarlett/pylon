@@ -65,10 +65,12 @@ class Command:
         while loop_idx < len(cmd):
             block = cmd[loop_idx]
 
+            # Check if flag is set
             if block in digested_cmd['flag'].keys():
                 digested_cmd['flag'][block] = True
                 loop_idx += 1
 
+            # Check if single-value key is set
             elif block in digested_cmd['sval'].keys():
                 try:
                     loop_idx += 1
@@ -83,10 +85,36 @@ class Command:
                         "{}: invalid option -- {}".format(cmd[0], block.strip('-')))
                     return None
 
+            # Check if multi-value keys are set
+            elif block in digested_cmd['mval'].keys():
+                try:
+                    loop_idx += 1
+                    if cmd[loop_idx].startswith('-'):
+                        raise Exception
+                    digested_cmd['mval'][block] = [cmd[loop_idx]]
+                    loop_idx += 1
+
+                except Exception:
+                    # Exception for IndexError as well
+                    print(
+                        "{}: invalid option -- {}".format(cmd[0], block.strip('-')))
+                    return None
+
+                # Read more value until it meets the end or other option
+                while loop_idx < len(cmd):
+                    if not cmd[loop_idx].startswith('-'):
+                        digested_cmd['mval'][block].append(cmd[loop_idx])
+
+                        loop_idx += 1
+                    else:
+                        break
+
+            # Filter out unidentified options
             elif block.startswith('-'):
                 print("{}: invalid option -- {}".format(cmd[0], block.strip('-')))
                 return None
 
+            # Other wise consider it as `argument`
             else:
                 digested_cmd['args'].append(block)
                 loop_idx += 1
@@ -99,8 +127,8 @@ class Command:
     def c_cd(self, raw_cmd):
         opts = self.digest(raw_cmd,
                            flag=['-q'],
-                           sval=['-d'],
-                           mval=[],
+                           sval=['-s'],
+                           mval=['-m'],
                            args=[],
                            singleArg=False
                            )
