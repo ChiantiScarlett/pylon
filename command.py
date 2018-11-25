@@ -64,67 +64,48 @@ class Command:
         loop_idx = 1
         while loop_idx < len(cmd):
             block = cmd[loop_idx]
-            print(block, 'idx: ', loop_idx)
-
 
             if block in digested_cmd['flag'].keys():
                 digested_cmd['flag'][block] = True
                 loop_idx += 1
-            # elif block in digested_cmd['sval'].keys():
-            #     while loop_idx < len(cmd):
-            #         try:
-            #             loop_idx += 1
-            #             if cmd[loop_idx].startswith('-'):
-            #                 raise Exception
-            #             digested_cmd['sval'][block] = cmd[loop_idx]
 
-            #             # Check if the input has single value
-            #             if loop_idx + 1 < len(cmd):
-            #                 if not cmd[loop_idx + 1].startswith('-'):
-            #                     raise Exception
+            elif block in digested_cmd['sval'].keys():
+                try:
+                    loop_idx += 1
+                    if cmd[loop_idx].startswith('-'):
+                        raise Exception
+                    digested_cmd['sval'][block] = cmd[loop_idx]
+                    loop_idx += 1
 
-            #         except Exception:
-            #             # Exception for IndexError as well
-            #             print("{}: invalid option -- {}".format(cmd[0], block.strip('-')))
-            #             return None
+                except Exception:
+                    # Exception for IndexError as well
+                    print(
+                        "{}: invalid option -- {}".format(cmd[0], block.strip('-')))
+                    return None
 
-
-            # elif block in digested_cmd['sval'].keys():
-            #     try:
-            #         loop_idx += 1
-            #         if cmd[loop_idx].startswith('-'):
-            #             raise Exception
-            #         digested_cmd['sval'][block] = cmd[loop_idx]
-            #     except:
-            #         # Exception for IndexError as well
-            #         print("{}: invalid option -- {}".format(cmd[0], block.strip('-')))
-            #         return None
-
-            # elif block.startswith('-'):
-            #     print("{}: invalid option -- {}".format(cmd[0], block.strip('-')))
-            #     return None
+            elif block.startswith('-'):
+                print("{}: invalid option -- {}".format(cmd[0], block.strip('-')))
+                return None
 
             else:
                 digested_cmd['args'].append(block)
                 loop_idx += 1
 
-
         return digested_cmd
-
-
 
     def c_clear(self, raw_cmd):
         subprocess.call('clear')
 
     def c_cd(self, raw_cmd):
         opts = self.digest(raw_cmd,
-                           flag=['-f'],
-                           sval=['-s'],
-                           mval=['-m'],
+                           flag=['-q'],
+                           sval=['-d'],
+                           mval=[],
                            args=[],
                            singleArg=False
                            )
-        print(opts)
+        from pprint import pprint
+        pprint(opts)
 
     def c_exit(self, raw_cmd):
         sys.exit()
