@@ -4,13 +4,15 @@ import shlex
 
 
 class Command:
-    def __init__(self):
+    def __init__(self, dbx, tree_stack):
         self.table = {
             'cd': self.c_cd,
             'clear': self.c_clear,
             'cls': self.c_clear,
             'exit': self.c_exit,
         }
+        self.dbx = dbx
+        self.tree_stack = tree_stack
 
     def run(self, raw_cmd):
         # Do nothing if input_cmd is ''
@@ -31,7 +33,6 @@ class Command:
                flag=[],
                sval=[],
                mval=[],
-               args=[],
                singleArg=False):
         """
         Read and analyze options
@@ -111,12 +112,19 @@ class Command:
 
             # Filter out unidentified options
             elif block.startswith('-'):
-                print("{}: invalid option -- {}".format(cmd[0], block.strip('-')))
+                print("{}: invalid option -- {}".format(cmd[0],
+                    block.strip('-')))
                 return None
 
             # Other wise consider it as `argument`
             else:
                 digested_cmd['args'].append(block)
+
+                # If singleArg is True, raise Error
+                if singleArg and len(digested_cmd['args']) > 1:
+                    print(
+                        "{}: invalid option -- too many arguments".format(cmd[0]))
+
                 loop_idx += 1
 
         return digested_cmd
@@ -125,15 +133,37 @@ class Command:
         subprocess.call('clear')
 
     def c_cd(self, raw_cmd):
-        opts = self.digest(raw_cmd,
-                           flag=['-q'],
-                           sval=['-s'],
-                           mval=['-m'],
-                           args=[],
-                           singleArg=False
+        opts=self.digest(raw_cmd,
+                           flag=[],
+                           sval=[],
+                           mval=[],
+                           singleArg=True
                            )
-        from pprint import pprint
-        pprint(opts)
+
+        # Empty path: Do nothing
+        if len(opts['args']) == 0:
+            return
+
+        # Strip rightside '/'
+        path = opts['args'][0]
+        path = path[:-1] if path.endswith('/') else path
+
+        # Split path
+        routes = path.split('/')
+
+        for path in routes:
+            if path == '..':
+                self.tree_stack.pop()
+            else:
+                status_OK = self.tree_stack.push(path)
+                if not status_OK:
+                    print("cd: {}: No such file or directory"
+                        .format(path))
+                return
+
+
+
+
 
     def c_exit(self, raw_cmd):
         sys.exit()

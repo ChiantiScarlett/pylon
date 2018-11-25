@@ -9,8 +9,8 @@ class Pylon:
         """ Based on the assumption that dbx class is secured. """
         self.dbx = dbx
         self.username = dbx.users_get_current_account().name.familiar_name
-        self.cmd = Command()
-        self.tree_stack = TreeStack()
+        self.tree_stack = TreeStack(self.dbx)
+        self.cmd = Command(self.dbx, self.tree_stack)
 
     def mainloop(self):
         while True:
