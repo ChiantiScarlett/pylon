@@ -27,12 +27,12 @@ class Node:
             self.children[child_name] = child
             return child
 
-    def print(self, depth=0, isLastRow=False):
-        if depth == 0:
+    def print(self, depth=[], isLastItem=False, isLastRow=True):
+        if depth == []:
             print('.')
 
-        for i in range(depth):
-            print("│   ", end="")
+        for item in depth:
+            print(item, end="")
 
         if isLastRow and not self.children:
             print('└──', self.name)
@@ -44,10 +44,11 @@ class Node:
         else:
             if len(self.children) > 1:
                 for child in list(self.children.keys())[:-1]:
-                    self.children[child].print(depth=depth+1, isLastRow=False)
+                    self.children[child].print(
+                        depth=depth+['│   '], isLastRow=False)
 
             self.children[list(self.children.keys())[-1]
-                          ].print(depth=depth+1, isLastRow=True)
+                          ].print(depth=depth+["│   "], isLastRow=True)
 
     def __str__(self):
         return '<'+self.name+'>'
