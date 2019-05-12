@@ -36,7 +36,7 @@ Each article consists of 3 parts
 - media sources or file attachment that belong to the article
 - a map file.
 
-```json
+```
 // .synapse basic format
 {
   912ec803b2ce49e4a541068d495ab570: {
@@ -44,12 +44,26 @@ Each article consists of 3 parts
   	date: '2018-05-10',
   	name: '리액트 프로젝트 - 머신러닝 관련',
     key: '912ec803b2ce49e4a541068d495ab570',
-  	tags: []
-	},
+    tags: []
+    src: [
+      {
+        path: [],
+        key: '6a204bd89f3c8348afd5c77c717a097a',
+        filename: 'photo1.jpg',
+        filesize: 26304592
+      },
+      {
+        path: [],
+        key: 'aee0014b14124efe03c361e1eed93589',
+        filename: 'photo2.jpg',
+        filesize: 20249849
+      }
+    ]
+	}
 }
 ```
 
-```json
+```
 // .root_synapse basic format
 {
   {
@@ -58,14 +72,29 @@ Each article consists of 3 parts
       date: '2018-05-10',
       name: '리액트 프로젝트 - 머신러닝 관련',
       key: '912ec803b2ce49e4a541068d495ab570',
-      tags: ['react']
+      tags: ['react'],
+      src: [
+        {
+          path: [],
+          key: '6a204bd89f3c8348afd5c77c717a097a',
+          filename: 'photo1.jpg',
+          filesize: 26304592
+        },
+        {
+          path: [],
+          key: 'aee0014b14124efe03c361e1eed93589',
+          filename: 'photo2.jpg',
+          filesize: 20249849
+        }
+      ]
   }, {
     6a69fd75d5eeea0e2794b3238ad45f3f: {
 	  	path: ['D. Draft', '통계'],
       date: '2018-05-10',
       name: '응용 경영 통계 R',
       key: '912ec803b2ce49e4a541068d495ab570',
-      tags: []
+      tags: [],
+      src: []
     },
   }
 }
