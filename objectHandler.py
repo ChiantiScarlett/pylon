@@ -27,6 +27,28 @@ class Node:
             self.children[child_name] = child
             return child
 
+    def print(self, depth=0, isLastRow=False):
+        if depth == 0:
+            print('.')
+
+        for i in range(depth):
+            print("│   ", end="")
+
+        if isLastRow and not self.children:
+            print('└──', self.name)
+        else:
+            print('├──', self.name)
+
+        if not self.children:
+            return
+        else:
+            if len(self.children) > 1:
+                for child in list(self.children.keys())[:-1]:
+                    self.children[child].print(depth=depth+1, isLastRow=False)
+
+            self.children[list(self.children.keys())[-1]
+                          ].print(depth=depth+1, isLastRow=True)
+
     def __str__(self):
         return '<'+self.name+'>'
 
@@ -56,17 +78,19 @@ class RootSynapse:
         """
         Draw tree
         """
-        self.tree = {}
 
-        root_tree = Node(name='Synapse')
+        self.root_tree = Node(name='Synapse')
         for key in self.data.keys():
             path = self.data[key]['path']
-            child = root_tree
+            child = self.root_tree
 
             for filename in self.data[key]['path']:
                 child = child.add_child(filename)
 
             child.add_child(self.data[key]['filename'], isDir=False)
+
+        # self.root_tree.children['D. Draft'].print()
+        self.root_tree.print()
 
     def draw(self, depth=None, head=None):
         """
@@ -77,6 +101,7 @@ class RootSynapse:
             depth: file depth
             head: number of lines to print
         """
+        pass
 
     def get_tags(self):
         """
