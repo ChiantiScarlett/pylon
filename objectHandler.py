@@ -28,6 +28,9 @@ class Node:
             return child
 
     def print(self, depth=[], isLastItem=False, isLastRow=True):
+        """
+        Recursive printing method => display a tree structure on the console.
+        """
         if depth == []:
             print('.')
 
@@ -77,7 +80,7 @@ class RootSynapse:
 
     def digest(self):
         """
-        Draw tree
+        Convert dict object from `self.data` to tree-shape Node class.
         """
 
         self.root_tree = Node(name='Synapse')
@@ -90,10 +93,7 @@ class RootSynapse:
 
             child.add_child(self.data[key]['filename'], isDir=False)
 
-        # self.root_tree.children['D. Draft'].print()
-        self.root_tree.print()
-
-    def draw(self, depth=None, head=None):
+    def tree(self, depth=None, head=None):
         """
         Description:
             Print out tree structure on console, similar to the `tree`
@@ -102,7 +102,7 @@ class RootSynapse:
             depth: file depth
             head: number of lines to print
         """
-        pass
+        self.root_tree.print()
 
     def get_tags(self):
         """
