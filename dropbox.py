@@ -1,4 +1,8 @@
 class Dropbox:
+    """
+    <server file handler>
+    """
+
     def __init__(self):
         """
         Create a dropbox object via Dropbox API, and get the file.
