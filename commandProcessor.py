@@ -30,7 +30,7 @@ class Commands:
         pass
 
     def cmd_clear(self, args):
-        pass
+        subprocess.call('clear')
 
     def cmd_exit(self, args):
         sys.exit(0)
