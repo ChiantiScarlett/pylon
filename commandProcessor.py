@@ -84,14 +84,23 @@ class Commands:
         column_length = 1 if column_length == 0 else column_length
 
         # Print dir / file names with paddings:
+        children.sort()
         for child in children:
             padding_length = int(terminal_width/column_length)
             # Extra removal when unicode character is detected:
             for char in child:
                 padding_length -= 2 if ord(char) > 128 else 1
 
+            # Check if the child is directory
+            if self.synapse.current_node.children[child].children is not None:
+                color = 'cyan'
+                style = 'bright'
+            else:
+                color = None
+                style = None
             # Switch rows when the item is on the last column:
-            self.print(child+" " * padding_length)
+            self.print(child+" " * padding_length,
+                       color=color, style=style)
             if (children.index(child)+1) % column_length == 0:
                 self.print('\n')
 
@@ -134,7 +143,7 @@ class CommandProcessor(Commands):
         This method loads initial screen
         """
         # Clear screen based on the OS.
-        print(popen('clear', 'r').read(), end="")
+        # print(popen('clear', 'r').read(), end="")
 
     def read_input(self):
         """
