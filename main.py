@@ -1,19 +1,16 @@
 from dropbox import Dropbox
 from objectHandler import RootSynapse
 from commandProcessor import CommandProcessor
-import argparse
 
 
 def main():
-    # Parse arguments:
-    parser = argparse.ArgumentParser()
-    parser.add_argument('action', help="action: [new, get, commit, push]")
-    parser.add_argument('arguments', nargs="*", help="options")
-    args = vars(parser.parse_args())
 
-    # Create object handler:
-    handler = RootSynapse('.root_synapse')
-    processor = CommandProcessor(arguments=args, handler=handler)
+    synapse = RootSynapse('.root_synapse')
+    processor = CommandProcessor(synapse=synapse)
+
+    while True:
+        processor.show_cursor()
+        processor.read_input()
 
 
 if __name__ == "__main__":
