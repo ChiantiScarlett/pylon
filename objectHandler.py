@@ -8,8 +8,8 @@ import sys
 
 
 class Node:
-    def __init__(self, name):
-        self.parent = None
+    def __init__(self, name, parent=None):
+        self.parent = parent
         self.children = {}
         self.name = name
 
@@ -21,7 +21,7 @@ class Node:
         if child_name in self.children.keys() and isDir:
             return self.children[child_name]
         else:
-            child = Node(child_name)
+            child = Node(name=child_name, parent=self)
             if not isDir:
                 child.child = None
             self.children[child_name] = child
@@ -31,6 +31,7 @@ class Node:
         """
         Recursive printing method => display a tree structure on the console.
         """
+
         if depth == []:
             print('.')
 
@@ -38,9 +39,10 @@ class Node:
             print(item, end="")
 
         if isLastRow and not self.children:
-            print('└──', self.name)
+            print('└──', self.name, "("+self.parent.name if self.parent else '' + ")")
         else:
-            print('├──', self.name)
+            print('├──', self.name,
+                  "("+self.parent.name if self.parent else '' + ")")
 
         if not self.children:
             return
@@ -54,7 +56,7 @@ class Node:
                           ].print(depth=depth+["│   "], isLastRow=True)
 
     def __str__(self):
-        return '<'+self.name+'>'
+        return self.name
 
 
 class RootSynapse:
@@ -68,6 +70,8 @@ class RootSynapse:
         """
 
         self.data = None
+        self.root_node = None
+        self.current_node = None
 
         try:
             with open(path, 'r') as fp:
@@ -77,16 +81,17 @@ class RootSynapse:
             sys.exit(0)
 
         self.digest()
+        self.current_node = self.root_node
 
     def digest(self):
         """
         Convert dict object from `self.data` to tree-shape Node class.
         """
 
-        self.root_tree = Node(name='Synapse')
+        self.root_node = Node(name='Synapse', parent=None)
         for key in self.data.keys():
             path = self.data[key]['path']
-            child = self.root_tree
+            child = self.root_node
 
             for filename in self.data[key]['path']:
                 child = child.add_child(filename)
@@ -102,7 +107,15 @@ class RootSynapse:
             depth: file depth
             head: number of lines to print
         """
-        self.root_tree.print()
+        self.root_node.print()
+
+    def get_parents(self):
+        cursor = self.current_node
+        parents_list = []
+        while cursor != None:
+            parents_list.append(cursor.name)
+            cursor = cursor.parent
+        return parents_list
 
     def get_tags(self):
         """
