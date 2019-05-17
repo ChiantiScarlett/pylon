@@ -23,7 +23,7 @@ class Node:
         else:
             child = Node(name=child_name, parent=self)
             if not isDir:
-                child.child = None
+                child.children = None
             self.children[child_name] = child
             return child
 
@@ -39,10 +39,9 @@ class Node:
             print(item, end="")
 
         if isLastRow and not self.children:
-            print('└──', self.name, "("+self.parent.name if self.parent else '' + ")")
+            print('└──', self.name)
         else:
-            print('├──', self.name,
-                  "("+self.parent.name if self.parent else '' + ")")
+            print('├──', self.name)
 
         if not self.children:
             return
