@@ -45,7 +45,7 @@ Each article consists of 3 parts
   	name: '리액트 프로젝트 - 머신러닝 관련',
     key: '912ec803b2ce49e4a541068d495ab570',
     tags: []
-    src: [
+    src:   [
       {
         path: [],
         key: '6a204bd89f3c8348afd5c77c717a097a',
@@ -63,39 +63,73 @@ Each article consists of 3 parts
 }
 ```
 
+sync => make sure you are on the right track
+.root_synapse.lock
+.root_synapse
+
 ```
 // .root_synapse basic format
 {
-  {
-    912ec803b2ce49e4a541068d495ab570: {
-	  path: ['D. Draft', '리액트 관련'],
-      date: '2018-05-10',
-      name: '리액트 프로젝트 - 머신러닝 관련',
-      key: '912ec803b2ce49e4a541068d495ab570',
-      tags: ['react'],
-      src: [
-        {
-          path: [],
-          key: '6a204bd89f3c8348afd5c77c717a097a',
-          filename: 'photo1.jpg',
-          filesize: 26304592
+    "summary": {},
+    "sync": "8ce4b16b22b58894aa86c421e8759df3",
+    "data": {
+        "912ec803b2ce49e4a541068d495ab570": {
+        "path": ["D. Draft", "리액트 관련"],
+        "date": "2018-05-10",
+        "name": "리액트 프로젝트 - 머신러닝 관련",
+        "filesize": 32019,
+        "key": "912ec803b2ce49e4a541068d495ab570",
+        "tags": ["react"],
+        "src": [
+            {
+            "path": [],
+            "key": "6a204bd89f3c8348afd5c77c717a097a",
+            "filename": "photo1.jpg",
+            "filesize": 26304592
+            },
+            {
+            "path": [],
+            "key": "aee0014b14124efe03c361e1eed93589",
+            "filename": "photo2.jpg",
+            "filesize": 20249849
+            }
+        ]
         },
-        {
-          path: [],
-          key: 'aee0014b14124efe03c361e1eed93589',
-          filename: 'photo2.jpg',
-          filesize: 20249849
+        "6a69fd75d5eeea0e2794b3238ad45f3f": {
+            "path": ["D. Draft", "통계"],
+        "date": "2018-05-10",
+        "filesize": 18042,
+        "name": "응용 경영 통계 R",
+        "key": "912ec803b2ce49e4a541068d495ab570",
+        "tags": [],
+        "src": []
         }
-      ]
-  }, {
-    6a69fd75d5eeea0e2794b3238ad45f3f: {
-	  	path: ['D. Draft', '통계'],
-      date: '2018-05-10',
-      name: '응용 경영 통계 R',
-      key: '912ec803b2ce49e4a541068d495ab570',
-      tags: [],
-      src: []
-    },
-  }
+    }
 }
 ```
+
+## commands list
+
+- global settings: open global settings file and let user to modify
+- global compare: check the difference between the server and local user files.
+- global
+
+- compare: check the difference between the server and current local directory.
+- new: create new synapse object
+- get
+
+## Procedures
+
+- isyn: synapse interactive mode: move to synapse directory and let isyn interactive mode.
+- command:
+  - ls
+  - cd
+  - new SYNAPSE_OBJECT_NAME
+  - set date YYYY-MM-DD
+  - set tag TAGNAME1 TAGNAME2
+  - set title TITLE_NAME
+  - summary
+  - mkdir
+  - rm SYNAPSE_OBJECT_NAME
+  - settings: open nano .synapse file
+- global commands?
