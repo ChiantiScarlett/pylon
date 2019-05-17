@@ -4,6 +4,7 @@
 ###############################################################################
 
 import subprocess
+from colorama import init, Fore, Back, Style
 
 
 class Commands:
@@ -47,13 +48,36 @@ class CommandProcessor(Commands):
         """
         pass
 
-    def print(self, message, color=None):
+    def print(self, message, fg=None, bg=None, style=None):
+        # Foreground color settings:
+
+        fg_map = {'black': Fore.BLACK, 'red': Fore.RED,
+                  'green': Fore.GREEN, 'yellow': Fore.YELLOW,
+                  'blue': Fore.BLUE, 'magenta': Fore.MAGENTA,
+                  'cyan': Fore.CYAN, 'white': Fore.WHITE
+                  }
+
+        bg_map = {'black': Back.BLACK, 'red': Back.RED,
+                  'green': Back.GREEN, 'yellow': Back.YELLOW,
+                  'blue': Back.BLUE, 'magenta': Back.MAGENTA,
+                  'cyan': Back.CYAN, 'white': Back.WHITE
+                  }
+
+        style_map = {'dim': Style.DIM, 'normal': Style.NORMAL,
+                     'bright': Style.BRIGHT}
+
+        if fg in fg_map.keys():
+            print(fg_map[fg], end="")
+        if bg in bg_map.keys():
+            print(bg_map[bg], end="")
+        if style in style_map.keys():
+            print(style_map[style], end="")
+
         print(str(message), end="")
-        return
+        print(Style.RESET_ALL, end="")
 
     def flush(self):
         # Clear screen based on the OS.
         subprocess.call('clear')
 
         current_dirs = "/".join(self.synapse.get_parents())
-        self.print(current_dirs)
