@@ -1,16 +1,15 @@
 from dropbox import Dropbox
-from objectHandler import RootSynapse
+from objectHandler import RootSynapseLoader, ArgumentReader
 from commandProcessor import CommandProcessor
 
 
 def main():
 
-    synapse = RootSynapse('.root_synapse')
-    processor = CommandProcessor(synapse=synapse)
+    synapse = RootSynapseLoader('.root_synapse')
+    reader = ArgumentReader()
 
-    while True:
-        processor.show_cursor()
-        processor.read_input()
+    processor = CommandProcessor(synapse=synapse, reader=reader)
+    processor.digest()
 
 
 if __name__ == "__main__":
