@@ -1,4 +1,4 @@
-from dropbox import Dropbox
+from dropbox import DropboxHandler
 from objectHandler import RootSynapseLoader, ArgumentReader
 from commandProcessor import CommandProcessor
 

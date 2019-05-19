@@ -1,4 +1,4 @@
-class Dropbox:
+class DropboxHandler:
     """
     <server file handler>
     """
