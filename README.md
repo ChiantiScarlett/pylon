@@ -1,5 +1,48 @@
 # Project Synapse
 
+## Introduction
+
+Sometimes it is really a pain in the butt to organize and make things squared away. As a person who really enjoys writing scribbles all over the place, I always seeked for a magic tool that can do the task for me. But unfortunately, none of the program - including Evernote, Dropbox, OneNote, Google Drive, or even a simple sticky desktop app - fully satisfied my objective. So I decided to create a small program that can store data in a linear form but also can visualize them as if it is shaped in a regular directory structure.
+
+So basically, Project Synapse is a program that stores an object(called Synapse) in Dropbox, but limits its depth level to one. But each Synapse object contains a metadata file called `.synapse`, which help the core program visualize the directory structure.
+
+## .synapse Object
+
+`.synapse` file shall be written in the following structure:
+
+```json
+{
+  "66acc56887048570cc58ccb871fce1cc": {
+    "object_name": "D. Draft/2019-04-20 Book Review",
+    "components": {
+      "1963b690ea329abaad700070508f8e99": {
+        "filename": "index.md",
+        "filesize": 49231,
+        "alias": "",
+        "comment": "",
+        "tags": []
+      },
+      "9c3f444e207d882d36b47ce69b1d5bd1": {
+        "filename": "src/image1.jpg",
+        "filesize": 345913,
+        "alias": "",
+        "comment": "",
+        "tags": []
+      },
+      "c30a8a5a624fb66c7e06a2c5fa5eb8f9": {
+        "filename": "src/image2.jpg",
+        "filesize": 342480,
+        "alias": "",
+        "comment": "",
+        "tags": []
+      }
+    }
+  }
+}
+```
+
+# Project Synapse
+
 ## Sketch
 
 What I need:
