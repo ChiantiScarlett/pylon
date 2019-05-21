@@ -12,21 +12,17 @@ from core import Console
 class _Node:
     def __init__(self, name, parent=None):
         self.parent = parent
-        self.children = {}
+        self.isDir = True
         self.name = name
+        self.children = {}
+        self.filsize = None
 
-    def set_parent(self, parent):
-        self.parent = parent
-
-    def add_child(self, child_name, isDir=True):
-        # print(self.name, "->", child_name)
-        if child_name in self.children.keys() and isDir:
-            return self.children[child_name]
+    def add_child(self, name):
+        if name in self.children.keys():
+            return self.children[name]
         else:
-            child = _Node(name=child_name, parent=self)
-            if not isDir:
-                child.children = None
-            self.children[child_name] = child
+            child = _Node(name=name, parent=self)
+            self.children[name] = child
             return child
 
     def print(self, depth=[], isLastItem=False, isLastRow=True):
@@ -60,65 +56,54 @@ class _Node:
         return self.name
 
 
-class RootSynapseLoader:
+class SynapseLoader:
     """
-    <local file handler>
+    This class loads `.synapse` file and draw virtual directory structure using
+    `_Node` class.
     """
 
     def __init__(self, path):
-        """
-        Class object that fabricates data based on the .root_synapse file.
-        """
-
-        self.data = None
-        self.root_node = None
-        self.parent = None
-        self.current_node = None
         self.console = Console()
-
         try:
             with open(path, 'r') as fp:
-                self.data = json.loads(fp.read())['data']
-        except FileNotFoundError:
-            print('[*] File not found.')
-            sys.exit(0)
+                data = json.loads(fp.read())
+        except json.JSONDecodeError:
+            self.console.raise_error(
+                'Invalid format in `.synapse` file.', type="CRITICAL")
+
+        self.key = list(data.keys())[0]
+        self.name = data[self.key]['object_name']
+        self.components = data[self.key]['components']
+        self.structure = None
 
         self.digest()
-        self.current_node = self.root_node
 
     def digest(self):
         """
-        Convert dict object from `self.data` to tree-shape _Node class.
+        create a structure with virtualized structure with _Node() file
         """
+        # Create object directory structure:
+        path_list = self.name.split('/')
+        self.structure = _Node(name=path_list[0], parent=None)
+        cursor = self.structure
+        path_list.pop(0)
+        for path in path_list:
+            cursor = cursor.add_child(path)
 
-        self.root_node = _Node(name='Synapse', parent=None)
-        for key in self.data.keys():
-            path = self.data[key]['path']
-            child = self.root_node
+        # Add components into the structure
+        obj_cursor = cursor
+        for key in self.components.keys():
+            cursor = obj_cursor
+            filename = self.components[key]['filename']
+            for file in filename.split('/'):
+                cursor = cursor.add_child(file)
 
-            for filename in self.data[key]['path']:
-                child = child.add_child(filename)
+            cursor.isDir = False  # Last cursor should be a file object
+            cursor.filesize = self.components[key]['filesize']
 
-            child.add_child(self.data[key]['filename'], isDir=False)
+        print(self.structure.print())
 
-    def tree(self, depth=None, head=None):
-        """
-        Description:
-            Print out tree structure on console, similar to the `tree`
-            linux command.
-        Arguments:
-            depth: file depth
-            head: number of lines to print
-        """
-        self.root_node.print()
 
-    def get_parents(self):
-        """
-        Returns list of parent hierarchy names
-        """
-        cursor = self.current_node
-        parents_list = []
-        while cursor != None:
-            parents_list.append(cursor.name)
-            cursor = cursor.parent
-        return parents_list
+class RootSynapseLoader(SynapseLoader):
+    def __init__(self):
+        super().__init__()
