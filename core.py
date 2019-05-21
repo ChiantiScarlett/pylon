@@ -28,6 +28,7 @@ class Console:
 
     def __init__(self):
         self.ERROR_TYPES = {
+            'CRITICAL': {'color': 'yellow', 'background': None, 'style': 'bright'},
             'ERROR': {'color': 'red', 'background': None, 'style': 'bright'},
             'DEFAULT': {'color': None, 'background': None, 'style': None}
         }
@@ -66,7 +67,7 @@ class Console:
         if type.upper() not in self.ERROR_TYPES.keys():
             self.raise_error(message='Invalid message type: {}'.format(type))
 
-        self.print('[*] {}\n'.format(message),
+        self.print('[*] {} :: {}\n'.format(type, message),
                    color=self.ERROR_TYPES[type]['color'],
                    background=self.ERROR_TYPES[type]['background'],
                    style=self.ERROR_TYPES[type]['style'])
