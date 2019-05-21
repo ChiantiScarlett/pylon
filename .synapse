@@ -1,0 +1,28 @@
+{
+  "66acc56887048570cc58ccb871fce1cc": {
+    "object_name": "D. Draft/2019-04-20 Book Review",
+    "components": {
+      "1963b690ea329abaad700070508f8e99": {
+        "filename": "index.md",
+        "filesize": 49231,
+        "alias": "",
+        "comment": "",
+        "tags": []
+      },
+      "9c3f444e207d882d36b47ce69b1d5bd1": {
+        "filename": "src/image1.jpg",
+        "filesize": 345913,
+        "alias": "",
+        "comment": "",
+        "tags": []
+      },
+      "c30a8a5a624fb66c7e06a2c5fa5eb8f9": {
+        "filename": "src/image2.jpg",
+        "filesize": 342480,
+        "alias": "",
+        "comment": "",
+        "tags": []
+      }
+    }
+  }
+}
