@@ -4,9 +4,11 @@
 ###############################################################################
 
 from os import popen
+from os.path import exists
 import sys
 from core import Console, ArgumentReader
 from serverHandler import DropboxHandler
+from objectHandler import RootSynapseLoader, SynapseLoader
 
 
 class _Commands:
@@ -17,7 +19,8 @@ class _Commands:
             'rmdir': self.cmd_rmdir,
             'touch': self.cmd_touch,
             'rm': self.cmd_rm,
-            'mv': self.cmd_mv
+            'mv': self.cmd_mv,
+            'tmp': self.cmd_tmp
         }
 
     def action_wrapper(self, function, *args):
@@ -41,6 +44,9 @@ class _Commands:
     def cmd_mv(self, args):
         pass
 
+    def cmd_tmp(self, args):
+        pass  # Test
+
 
 class CommandProcessor(_Commands):
     """
@@ -56,19 +62,33 @@ class CommandProcessor(_Commands):
         self.console = Console()
         self.handler = None
 
+    def set_handler(self, handler):
+        self.handler = handler
+
     def digest(self):
         """
         """
         # Check if the handler is defined, else raise Error:
         if type(self.handler) not in [DropboxHandler]:
             self.console.raise_error(
-                'Invalid or undefined handler.', type='ERROR')
+                'Invalid or undefined server handler.', type='ERROR')
+
         # Initialize argument parser and read arguments:
         command = ArgumentReader().digest()
+
+        # Read synapse file from current directory:
+        if exists('.synapse'):
+            self.synapse = SynapseLoader(".synapse")
+        elif exists('.root_synapse'):
+            self.synapse = RootSynapseLoader(".root_synapse")
+        else:
+            self.console.raise_error(
+                'No `.synapse` file found. Make sure you are under '
+                'Synapse object directory.', type='ERROR')
 
         # Run following command:
         if command['action'] in self.action_table.keys():
             self.action_wrapper(
                 self.action_table[command['action']], command['arguments'])
         else:
-            self.print("[*] No argument specified.")
+            self.console.print("[*] No argument specified.")
