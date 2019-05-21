@@ -1,14 +1,14 @@
-from dropbox import DropboxHandler
-from objectHandler import RootSynapseLoader, ArgumentReader
 from commandProcessor import CommandProcessor
+from serverHandler import DropboxHandler
 
 
 def main():
+    # handler = DropboxHandler('./settings.json')
+    # synapse = RootSynapseLoader('.root_synapse')
+    server_handler = DropboxHandler('./settings.json')
 
-    synapse = RootSynapseLoader('.root_synapse')
-    reader = ArgumentReader()
-
-    processor = CommandProcessor(synapse=synapse, reader=reader)
+    processor = CommandProcessor()
+    # processor.set_handler(server_handler)
     processor.digest()
 
 

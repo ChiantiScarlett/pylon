@@ -6,7 +6,58 @@
 import json
 import sys
 import argparse
-from node import Node
+from core import Console
+
+
+class _Node:
+    def __init__(self, name, parent=None):
+        self.parent = parent
+        self.children = {}
+        self.name = name
+
+    def set_parent(self, parent):
+        self.parent = parent
+
+    def add_child(self, child_name, isDir=True):
+        # print(self.name, "->", child_name)
+        if child_name in self.children.keys() and isDir:
+            return self.children[child_name]
+        else:
+            child = _Node(name=child_name, parent=self)
+            if not isDir:
+                child.children = None
+            self.children[child_name] = child
+            return child
+
+    def print(self, depth=[], isLastItem=False, isLastRow=True):
+        """
+        Recursive printing method => display a tree structure on the console.
+        """
+
+        if depth == []:
+            print('.')
+
+        for item in depth:
+            print(item, end="")
+
+        if isLastRow and not self.children:
+            print('└──', self.name)
+        else:
+            print('├──', self.name)
+
+        if not self.children:
+            return
+        else:
+            if len(self.children) > 1:
+                for child in list(self.children.keys())[:-1]:
+                    self.children[child].print(
+                        depth=depth+['│   '], isLastRow=False)
+
+            self.children[list(self.children.keys())[-1]
+                          ].print(depth=depth+["│   "], isLastRow=True)
+
+    def __str__(self):
+        return self.name
 
 
 class RootSynapseLoader:
@@ -23,6 +74,7 @@ class RootSynapseLoader:
         self.root_node = None
         self.parent = None
         self.current_node = None
+        self.console = Console()
 
         try:
             with open(path, 'r') as fp:
@@ -36,10 +88,10 @@ class RootSynapseLoader:
 
     def digest(self):
         """
-        Convert dict object from `self.data` to tree-shape Node class.
+        Convert dict object from `self.data` to tree-shape _Node class.
         """
 
-        self.root_node = Node(name='Synapse', parent=None)
+        self.root_node = _Node(name='Synapse', parent=None)
         for key in self.data.keys():
             path = self.data[key]['path']
             child = self.root_node
@@ -70,15 +122,3 @@ class RootSynapseLoader:
             parents_list.append(cursor.name)
             cursor = cursor.parent
         return parents_list
-
-
-class ArgumentReader:
-    def __init__(self):
-        self.reader = argparse.ArgumentParser()
-        self.reader.add_argument('action')
-        self.reader.add_argument('arguments', nargs="*")
-        self.reader.parse_args()
-
-    def digest(self):
-        command = vars(self.reader.parse_args())
-        return command
