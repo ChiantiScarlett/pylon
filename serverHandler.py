@@ -12,6 +12,7 @@ class ServerHandler:
     console = None
     settings = None
     rsynapse = None
+    API = None
 
     def __init__(self, settings_path):
         self.console = Console()
@@ -19,9 +20,9 @@ class ServerHandler:
         with open(settings_path, 'r') as fp:
             self.settings = json.loads(fp.read())
 
-        self.connect()
+        self.load_synapse()
 
-    def connect(self):
+    def load_synapse(self):
         """
         Read locally stored `.root_synapse`. If not exists, fetch from the
         server using self.update_rsynapse()
@@ -32,12 +33,20 @@ class ServerHandler:
             self.rsynapse = RootSynapseLoader(
                 self.settings['LOCAL_STORAGE_PATH'])
 
+    def connect(self):
+        """
+        Create server API accessible object.
+        [ Should be overrided when inherited ]
+        """
+        self.console.raise_error(
+            '`self.connect` was not overrided.', type='CRITICAL')
+
     def update_rsynapse(self):
         """
         [ Should be overrided when inherited ]
         """
         self.console.raise_error(
-            '`self.connect` was not overrided.', type='CRITICAL')
+            '`self.update_rsynapse` was not overrided.', type='CRITICAL')
 
     def download_single_file(self, local_path, server_path):
         """
@@ -66,24 +75,33 @@ class DropboxHandler(ServerHandler):
         """
         [ Overriding from child-side ]
         """
-        self.dbx.files_download_to_file(local_path, server_path)
+        self.connect() if not self.API else None
+
+        self.API.files_download_to_file(local_path, server_path)
 
     def upload_single_file(self, local_path, server_path):
         """
         [ Overriding from child-side ]
         """
+        self.connect() if not self.API else None
+
         with open(local_path, 'rb') as fp:
-            self.dbx.files_upload(
+            self.API.files_upload(
                 fp.read(), server_path, mode=WriteMode('overwrite'))
+
+    def connect(self):
+        """
+        [ Overriding from child-side ]
+        """
+        self.API = dropbox.Dropbox(self.settings['DROPBOX_ACCESS_TOKEN'])
 
     def update_rsynapse(self):
         """
         [ Overriding from child-side ]
         """
-        self.dbx = dropbox.Dropbox(self.settings['DROPBOX_ACCESS_TOKEN'])
-
+        self.connect() if not self.API else None
         try:
-            f = dbx.files_list_folder(
+            f = self.API.files_list_folder(
                 '/'+self.settings['DROPBOX_ROOT_PATH'].strip('/')).entries
         except ValidationError:
             self.console.raise_error(
