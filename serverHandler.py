@@ -2,60 +2,91 @@ import dropbox
 from dropbox.stone_validators import ValidationError
 import json
 from core import Console
+from objectHandler import RootSynapseLoader
+from os.path import exists
+
+from dropbox.files import WriteMode
 
 
-class DropboxHandler:
-    """
-    <server file handler>
-    """
+class ServerHandler:
+    console = None
+    settings = None
+    rsynapse = None
 
     def __init__(self, settings_path):
-        """
-        Create a dropbox object via Dropbox API, and get the file.
-        """
-
         self.console = Console()
 
         with open(settings_path, 'r') as fp:
-            data = json.loads(fp.read())
-            self._access_token = data['access_token']
-            self._root_path = data['root_path']
+            self.settings = json.loads(fp.read())
 
         self.connect()
 
     def connect(self):
         """
-        Connect Dropbox object with keys from settings.json and initialize
-        the class.
+        Read locally stored `.root_synapse`. If not exists, fetch from the
+        server using self.update_rsynapse()
         """
-        dbx = dropbox.Dropbox(self._access_token)
+        if not exists(self.settings['LOCAL_STORAGE_PATH']):
+            self.update_rsynapse()
+        else:
+            self.rsynapse = RootSynapseLoader(
+                self.settings['LOCAL_STORAGE_PATH'])
+
+    def update_rsynapse(self):
+        """
+        [ Should be overrided when inherited ]
+        """
+        self.console.raise_error(
+            '`self.connect` was not overrided.', type='CRITICAL')
+
+    def download_single_file(self, local_path, server_path):
+        """
+        [ Should be overrided when inherited ]
+        """
+        self.console.raise_error(
+            '`self.download_single_file` was not overrided.', type='CRITICAL')
+
+    def upload_single_file(self, local_path, server_path):
+        """
+        [ Should be overrided when inherited ]
+        """
+        self.console.raise_error(
+            '`self.upload_single_file` was not overrided.', type='CRITICAL')
+
+
+class DropboxHandler(ServerHandler):
+    """
+    <server file handler using Dropbox>
+    """
+
+    def __init__(self, settings_path):
+        super().__init__(settings_path)
+
+    def download_single_file(self, local_path, server_path):
+        """
+        [ Overriding from child-side ]
+        """
+        self.dbx.files_download_to_file(local_path, server_path)
+
+    def upload_single_file(self, local_path, server_path):
+        """
+        [ Overriding from child-side ]
+        """
+        with open(local_path, 'rb') as fp:
+            self.dbx.files_upload(
+                fp.read(), server_path, mode=WriteMode('overwrite'))
+
+    def update_rsynapse(self):
+        """
+        [ Overriding from child-side ]
+        """
+        self.dbx = dropbox.Dropbox(self.settings['DROPBOX_ACCESS_TOKEN'])
+
         try:
-            f = dbx.files_list_folder('/'+self._root_path.strip('/')).entries
+            f = dbx.files_list_folder(
+                '/'+self.settings['DROPBOX_ROOT_PATH'].strip('/')).entries
         except ValidationError:
             self.console.raise_error(
-                message='dropbox: No directory found: `{}`'.format(
-                    '/'+self._root_path.strip('/')),
+                message='No such directory found on the server: `{}`'.format(
+                    '/'+self.settings['DROPBOX_ROOT_PATH'].strip('/')),
                 type='ERROR')
-
-    def read_root_synapse(self):
-        """
-        Read .root_synapse file from the Dropbox server.
-        """
-
-    def create(self, path):
-        """
-        Create a new synapse object.
-        """
-        pass
-
-    def upload(self, path):
-        """
-        Upload an object to the Dropbox.
-        """
-        pass
-
-    def update(self, path):
-        """
-        Update .root_synapse based on the file change.
-        """
-        pass
