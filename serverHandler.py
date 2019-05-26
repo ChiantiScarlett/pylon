@@ -3,7 +3,7 @@ from dropbox.stone_validators import ValidationError
 import json
 from core import Console
 from objectHandler import RootSynapseLoader
-from os.path import exists
+import os
 
 from dropbox.files import WriteMode
 
@@ -20,18 +20,18 @@ class ServerHandler:
         with open(settings_path, 'r') as fp:
             self.settings = json.loads(fp.read())
 
-        self.load_synapse()
+        # self.load_synapse()
 
-    def load_synapse(self):
-        """
-        Read locally stored `.root_synapse`. If not exists, fetch from the
-        server using self.update_rsynapse()
-        """
-        if not exists(self.settings['LOCAL_STORAGE_PATH']):
-            self.update_rsynapse()
-        else:
-            self.rsynapse = RootSynapseLoader(
-                self.settings['LOCAL_STORAGE_PATH'])
+    # def load_synapse(self):
+    #     """
+    #     Read locally stored `.root_synapse`. If not exists, fetch from the
+    #     server using self.update_rsynapse()
+    #     """
+    #     if not os.path.exists(self.settings['LOCAL_STORAGE_PATH']):
+    #         self.update_rsynapse()
+    #     else:
+    #         self.rsynapse = RootSynapseLoader(
+            # self.settings['LOCAL_STORAGE_PATH'])
 
     def connect(self):
         """
@@ -61,6 +61,14 @@ class ServerHandler:
         """
         self.console.raise_error(
             '`self.upload_single_file` was not overrided.', type='CRITICAL')
+
+    def read_rsynapse(self):
+        """
+        [ Should be overrided when inherited ]
+        This method reads rsynapse from the server.
+        """
+        self.console.raise_error(
+            '`self.read_rsynapse` was not overrided.', type='CRITICAL')
 
 
 class DropboxHandler(ServerHandler):
@@ -95,16 +103,15 @@ class DropboxHandler(ServerHandler):
         """
         self.API = dropbox.Dropbox(self.settings['DROPBOX_ACCESS_TOKEN'])
 
-    def update_rsynapse(self):
+    def read_rsynapse(self):
         """
         [ Overriding from child-side ]
         """
-        self.connect() if not self.API else None
-        try:
-            f = self.API.files_list_folder(
-                '/'+self.settings['DROPBOX_ROOT_PATH'].strip('/')).entries
-        except ValidationError:
-            self.console.raise_error(
-                message='No such directory found on the server: `{}`'.format(
-                    '/'+self.settings['DROPBOX_ROOT_PATH'].strip('/')),
-                type='ERROR')
+        self.download_single_file(
+            '.tmp', '/'+self.settings['DROPBOX_ROOT_PATH'].strip('/')+'/.root_synapse')
+        with open('.tmp', 'r') as fp:
+            data = json.loads(fp.read())
+
+        os.remove('.tmp')
+
+        return data
