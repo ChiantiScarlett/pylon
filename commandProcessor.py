@@ -5,6 +5,10 @@
 
 from os import popen
 from os.path import exists
+from os import mkdir
+import json
+from hashlib import md5
+from datetime import datetime
 import sys
 from core import Console, ArgumentReader
 from serverHandler import DropboxHandler
@@ -20,11 +24,50 @@ class _Commands:
             'touch': self.cmd_touch,
             'rm': self.cmd_rm,
             'mv': self.cmd_mv,
-            'tmp': self.cmd_tmp
+            'tmp': self.cmd_tmp,
+            'new': self.cmd_new,
+            'clone': self.cmd_clone
         }
 
     def action_wrapper(self, function, *args):
         function(*args)
+
+    def cmd_new(self, args):
+        """
+        Create new Synapse object
+        """
+        for arg in args:  # arg is the object name
+            mkdir(arg)
+            with open(arg+'/.synapse', 'w') as fp:
+                # Write default state:
+                data = {}
+                data[md5(str(datetime.now()).encode('utf-8')).hexdigest()] = {
+                    "object_name": arg, "components": {}}
+
+                fp.write(json.dumps(data))
+
+    def cmd_clone(self, args):
+        """
+        Download Synapse object from server
+        """
+        # Verify argument
+        if len(args) == 0:
+            self.console.raise_error(
+                'Command `clone` must have at least one argument of '
+                'object ID or alias.', type="ERROR")
+
+        # Read .root_synapse file.
+        rsynapse = self.handler.read_rsynapse()
+
+        for arg in args:  # arg is the Synapse object ID name
+            # Validate object ID or alias
+            if arg not in rsynapse['data'].keys():
+                self.console.raise_error(
+                    'Cannot find Synapse object which has ID or alias: `{}`'.format(
+                        arg),
+                    type="ERROR")
+            # Clone object
+            synapse = rsynapse['data'][arg]
 
     def cmd_tree(self, args):
         self.synapse.root_node.print()
