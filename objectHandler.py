@@ -101,8 +101,6 @@ class SynapseLoader:
             cursor.isDir = False  # Last cursor should be a file object
             cursor.filesize = self.components[key]['filesize']
 
-        print(self.structure.print())
-
 
 class RootSynapseLoader(SynapseLoader):
     def __init__(self):
