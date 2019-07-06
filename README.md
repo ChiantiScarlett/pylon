@@ -61,6 +61,7 @@ Values is the metadata of the archive. Remember that Archives under same Clip sh
 ```json
 {
   name: "LOG NAME",
+  anchor: "HEX CODE ANCHOR",
   timestamp: {
     start: "2019-05-20",
     end: "2019-05-21"
@@ -78,6 +79,7 @@ Values is the metadata of the archive. Remember that Archives under same Clip sh
 ```json
 {
   name: "FOLDER NAME",
+  anchor: "HEX CODE ANCHOR",
   clip: "CLIP NAME (UPPER DIR)",
   accessor: {
     key1: "value 1",
@@ -87,4 +89,37 @@ Values is the metadata of the archive. Remember that Archives under same Clip sh
   memo: "String memo"
 }
 ```
+
+
+
+## Possible Commands
+
+### add
+
+```bash
+$ synapse push log -d ./FOLDER/PATH
+$ synapse push archive -d ./APP_PATH
+```
+
+
+
+### view
+
+- launch CLI Synapse interface
+
+```bash
+$ synapse view
+```
+
+
+
+### Clone
+
+- You can clone 
+
+```bash
+$ synapse clone HEX_ID
+```
+
+
 
